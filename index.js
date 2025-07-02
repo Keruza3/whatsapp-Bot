@@ -1,42 +1,93 @@
+/**
+ * WhatsApp Bot principal
+ * ----------------------
+ * Usa whatsapp-web.js para automatizar respuestas y derivaciones de consultas.
+ * Genera un QR para vincular el número, responde mensajes en tiempo real
+ * y revisa mensajes pendientes al inicio.
+ */
+
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const funciones = require('./funciones');
 
-// Número del asesor
-const numeroAsesor = '54911xxxxxx@c.us'; // el numero tiene que tener codigo de area ej 54911 y al final @c.us
+// ——————————————————————
+// Configuración
+// ——————————————————————
 
-//conexion con el wpp
+/** 
+ * Número de WhatsApp del asesor que recibirá notificaciones.
+ * Debe incluir código de país + área (ej: 54911…) y terminar en “@c.us”
+ */
+const numeroAsesor = '54911xxxxxx@c.us';
+
+// ——————————————————————
+// Inicialización del cliente
+// ——————————————————————
+
+/**
+ * Crea una nueva instancia de Client:
+ * - authStrategy: guarda sesión local para no escanear QR cada vez.
+ * - puppeteer: ejecuta Chromium en modo headless sin sandbox (evita errores en entornos root).
+ */
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']//para evitar problemas al compilar el codigo(hay problemas con ciertos modulos)
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
-//esto genera el qr en la terminal para conectarse al wpp(queda guardado para otra vez)
+
+// ——————————————————————
+// Eventos principales
+// ——————————————————————
+
+/**
+ * Evento 'qr'
+ * ------------ 
+ * Se dispara cuando se necesita vincular el número.
+ * Genera un código QR en la consola para escanear desde el celular.
+ */
 client.on('qr', qr => {
     qrcode.generate(qr, { small: true });
     console.log('📲 Escaneá el QR con WhatsApp Web');
 });
 
-//avisa que ya esta conectado al wpp y si hay mensajes viejos los analiza para ver si tiene que derivar o no
+/**
+ * Evento 'ready'
+ * ---------------
+ * Se dispara cuando el bot ya está conectado y listo.
+ * - Muestra un mensaje de confirmación.
+ * - Llama a la función que revisa mensajes antiguos.
+ */
 client.on('ready', () => {
     console.log('✅ Bot conectado y listo');
     funciones.responderMensajesViejos(client, numeroAsesor);
 });
 
-//aca se responden los mensajes que llegan cuando el bot esta prendido
+/**
+ * Evento 'message'
+ * -----------------
+ * Se dispara por cada mensaje nuevo recibido mientras el bot está activo.
+ * Llama a la función que procesa y responde mensajes actuales.
+ */
 client.on('message', message => {
     funciones.responderMensajesActuales(client, message, numeroAsesor);
 });
 
+// ——————————————————————
+// Arranque del bot
+// ——————————————————————
+
+/**
+ * Inicializa la conexión y comienza a escuchar los eventos.
+ */
 client.initialize();
+
 
 /*NOTAS
 
-- ver si se puede hostear la api
-
-- diferenciar a quien derivar
+- ver si se puede hostear la api | se puede porque es una libreria no api
+- diferenciar a quien derivar | si lo que pense es decirle al bot que le diga al usuario que ponga quiero hablar con juanjo y ahi lo toma el bot y lo deriva a el
 
 - 
 
