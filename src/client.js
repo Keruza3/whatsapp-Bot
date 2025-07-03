@@ -1,11 +1,20 @@
-// Configuraciones generales del bot
+const { Client, LocalAuth } = require('whatsapp-web.js');
 
 /**
- * Número de WhatsApp del asesor que recibirá las notificaciones.
- * Debe incluir código de país + área y terminar en "@c.us".
+ * Crea una instancia del cliente de WhatsApp usando autenticación local.
+ * La instancia se configura para ejecutarse en modo headless y sin sandbox
+ * para evitar problemas en entornos sin interfaz gráfica.
+ *
+ * @returns {Client} Cliente de whatsapp-web.js listo para inicializar.
  */
-const numeroAsesor = '54911xxxxxx@c.us';
-
-module.exports = {
-  numeroAsesor,
+function crearCliente() {
+  return new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    },
+  });
 }
+
+module.exports = crearCliente;
