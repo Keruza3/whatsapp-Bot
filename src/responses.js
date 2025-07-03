@@ -1,5 +1,5 @@
 /**
- * funciones.js
+ * responses.js
  * ------------
  * Contiene la lógica de respuesta para mensajes nuevos y mensajes pendientes.
  */
