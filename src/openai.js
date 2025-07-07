@@ -42,7 +42,7 @@ async function createFineTuneJob(trainingFileId) {
     model: 'gpt-3.5-turbo',
     training_file: trainingFileId
   });
-  console.log('🚀 Fine-tune lanzado. job =', resp.id);
+  console.log('Fine-tune lanzado. job =', resp.id);
   return resp.id;
 }
 

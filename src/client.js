@@ -12,7 +12,7 @@ function crearCliente() {
     authStrategy: new LocalAuth(),
     puppeteer: {
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'], //no sandbox para que no tire error al compilar(que ya a pasado)
     },
   });
 }
