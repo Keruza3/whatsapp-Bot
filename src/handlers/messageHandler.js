@@ -4,94 +4,94 @@ const db = require('../core/database');
 const logger = require('../utils/logger');
 
 class MessageHandler {
-  async handleMessage(client, message) {
-    const customerPhone = message.from;
-    const messageText = message.body;
+  async manejarMensaje(client, mensaje) {
+    const telefonoCliente = mensaje.from;
+    const textoMensaje = mensaje.body;
     
     try {
       // 1. Analizar el mensaje
-      const analysis = await routingService.analyzeMessage(messageText, customerPhone);
-      logger.info(`Análisis del mensaje:`, analysis);
+      const analisis = await routingService.analizarMensaje(textoMensaje, telefonoCliente);
+      logger.info(`Análisis del mensaje:`, analisis);
       
-      // 2. Verificar si el cliente está en modo "routed"
-      const customer = await db.getCustomer(customerPhone);
-      if (customer && customer.status === 'routed_to_human') {
+      // 2. Verificar si el cliente está en modo "derivado"
+      const cliente = await db.getCliente(telefonoCliente);
+      if (cliente && cliente.estado === 'derivado_humano') {
         // Verificar si debe re-enganchar
-        if (await conversationService.shouldReengage(customerPhone)) {
-          await db.updateCustomerStatus(customerPhone, 'active');
+        if (await conversationService.debeReenganchar(telefonoCliente)) {
+          await db.actualizarEstadoCliente(telefonoCliente, 'activo');
         } else {
           // Reenviar al asesor asignado
-          const advisorNumber = routingService.advisors[customer.assigned_advisor];
-          if (advisorNumber) {
-            client.sendMessage(advisorNumber, `Cliente ${customerPhone} escribió: "${messageText}"`);
+          const numeroAsesor = routingService.asesores[cliente.asesor_asignado];
+          if (numeroAsesor) {
+            client.sendMessage(numeroAsesor, `Cliente ${telefonoCliente} escribió: "${textoMensaje}"`);
             return;
           }
         }
       }
       
-      // 3. Determinar routing
-      const routing = await routingService.routeCustomer(customerPhone, analysis);
+      // 3. Determinar derivación
+      const derivacion = await routingService.derivarCliente(telefonoCliente, analisis);
       
       // 4. Procesar respuesta
-      if (routing.shouldRoute) {
-        await this.routeToHuman(client, message, routing, analysis);
+      if (derivacion.debeDerivar) {
+        await this.derivarAHumano(client, mensaje, derivacion, analisis);
       } else {
-        await this.sendAutoResponse(client, message, analysis);
+        await this.enviarRespuestaAutomatica(client, mensaje, analisis);
       }
       
     } catch (error) {
       logger.error('Error procesando mensaje:', error);
-      await this.handleError(client, message);
+      await this.manejarError(client, mensaje);
     }
   }
 
-  async routeToHuman(client, message, routing, analysis) {
+  async derivarAHumano(client, mensaje, derivacion, analisis) {
     try {
-      const response = `👨‍ Perfecto! Te voy a conectar con ${routing.advisorName} que es especialista en este tipo de consultas. En breve te contacta.`;
+      const respuesta = `👨‍ Perfecto! Te voy a conectar con ${derivacion.nombreAsesor} que es especialista en este tipo de consultas. En breve te contacta.`;
       
-      await message.reply(response);
+      await mensaje.reply(respuesta);
       
-      const notification = `🔔 Cliente ${message.from} derivado a ${routing.advisorName}
+      const notificacion = `🔔 Cliente ${mensaje.from} derivado a ${derivacion.nombreAsesor}
       
-Tipo: ${analysis.tipo}
-Urgencia: ${analysis.urgencia}
-Mensaje: "${message.body}"`;
+Tipo: ${analisis.tipo}
+Urgencia: ${analisis.urgencia}
+Mensaje: "${mensaje.body}"`;
       
-      client.sendMessage(routing.advisorNumber, notification);
+      client.sendMessage(derivacion.numeroAsesor, notificacion);
       
-      logger.info(`Cliente ${message.from} derivado a ${routing.advisorName}`);
+      logger.info(`Cliente ${mensaje.from} derivado a ${derivacion.nombreAsesor}`);
     } catch (error) {
-      logger.error('Error en routeToHuman:', error);
+      logger.error('Error en derivarAHumano:', error);
       throw error;
     }
   }
 
-  async sendAutoResponse(client, message, analysis) {
+  async enviarRespuestaAutomatica(client, mensaje, analisis) {
     try {
-      const response = await conversationService.generateResponse(
-        message.body, 
-        message.from
+      const respuesta = await conversationService.generarRespuesta(
+        mensaje.body, 
+        mensaje.from
       );
       
-      await message.reply(response);
-      logger.info(`Respuesta automática enviada a ${message.from}`);
+      await mensaje.reply(respuesta);
+      logger.info(`Respuesta automática enviada a ${mensaje.from}`);
     } catch (error) {
-      logger.error('Error en sendAutoResponse:', error);
+      logger.error('Error en enviarRespuestaAutomatica:', error);
       throw error;
     }
   }
 
-  async handleError(client, message) {
+  async manejarError(client, mensaje) {
     try {
-      const errorResponse = "⚠️ Disculpa, tuve un problema técnico. Te voy a conectar con un asesor humano.";
-      await message.reply(errorResponse);
+      const respuestaError = "⚠️ Disculpa, tuve un problema técnico. Te voy a conectar con un asesor humano.";
+      await mensaje.reply(respuestaError);
       
       // Notificar al asesor principal
-      const notification = `❗ Error técnico con cliente ${message.from}: "${message.body}"`;
-      const defaultAdvisor = process.env.JUANJO_NUMBER || '54911xxxxxx@c.us';
-      client.sendMessage(defaultAdvisor, notification);
+      const notificacion = `❗ Error técnico con cliente ${mensaje.from}: "${mensaje.body}"`;
+      const asesorPorDefecto = process.env.JUANJO_NUMBER || '54911xxxxxx@c.us';
+      client.sendMessage(asesorPorDefecto, notificacion);
     } catch (error) {
-      logger.error('Error en handleError:', error);
+      logger.error('Error en manejarError:', error);
     }
   }
 }

@@ -35,12 +35,12 @@ client.on('ready', () => {
     logger.info('Bot conectado y listo');
     console.log('✅ Bot conectado y listo');
     console.log('🤖 Arquitectura modular activa');
-    console.log('📊 Base de datos SQLite inicializada');
+    console.log('📊 Base de datos MySQL inicializada');
 });
 
 client.on('message', async message => {
     try {
-        await messageHandler.handleMessage(client, message);
+        await messageHandler.manejarMensaje(client, message);
     } catch (error) {
         logger.error('Error en el manejo de mensaje:', error);
         console.error('❌ Error procesando mensaje:', error.message);

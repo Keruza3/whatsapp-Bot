@@ -1,125 +1,111 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const mysql = require('mysql2/promise');
 const logger = require('../utils/logger');
 
 class Database {
   constructor() {
-    const dbPath = path.join(__dirname, '../../data/customers.db');
-    this.db = new sqlite3.Database(dbPath, (err) => {
-      if (err) {
-        logger.error('Error conectando a la base de datos:', err);
-        throw err;
-      }
-      logger.info('Base de datos SQLite conectada');
+    this.pool = mysql.createPool({
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'chatbot_whatsapp',
+      port: process.env.DB_PORT || 3306,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0
     });
+    
     this.init();
   }
 
-  init() {
-    this.db.serialize(() => {
-      // Tabla de clientes
-      this.db.run(`
-        CREATE TABLE IF NOT EXISTS customers (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          phone TEXT UNIQUE NOT NULL,
-          name TEXT,
-          status TEXT DEFAULT 'active',
-          assigned_advisor TEXT,
-          last_interaction DATETIME DEFAULT CURRENT_TIMESTAMP,
-          conversation_count INTEGER DEFAULT 0,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-      `, (err) => {
-        if (err) {
-          logger.error('Error creando tabla customers:', err);
-        } else {
-          logger.info('Tabla customers creada/verificada');
-        }
-      });
-
-      // Tabla de conversaciones
-      this.db.run(`
-        CREATE TABLE IF NOT EXISTS conversations (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          customer_id INTEGER,
-          message TEXT,
-          response TEXT,
-          routed_to TEXT,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (customer_id) REFERENCES customers (id)
-        )
-      `, (err) => {
-        if (err) {
-          logger.error('Error creando tabla conversations:', err);
-        } else {
-          logger.info('Tabla conversations creada/verificada');
-        }
-      });
-    });
+  async init() {
+    try {
+      // Verificar conexión
+      const connection = await this.pool.getConnection();
+      logger.info('Base de datos MySQL conectada');
+      connection.release();
+    } catch (error) {
+      logger.error('Error conectando a la base de datos:', error);
+      throw error;
+    }
   }
 
-  async getCustomer(phone) {
-    return new Promise((resolve, reject) => {
-      this.db.get('SELECT * FROM customers WHERE phone = ?', [phone], (err, row) => {
-        if (err) {
-          logger.error('Error obteniendo cliente:', err);
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
-  }
-
-  async createCustomer(phone, name = null) {
-    return new Promise((resolve, reject) => {
-      this.db.run(
-        'INSERT OR IGNORE INTO customers (phone, name) VALUES (?, ?)',
-        [phone, name],
-        function(err) {
-          if (err) {
-            logger.error('Error creando cliente:', err);
-            reject(err);
-          } else {
-            resolve(this.lastID);
-          }
-        }
+  async getCliente(telefono) {
+    try {
+      const [rows] = await this.pool.execute(
+        'SELECT * FROM clientes WHERE telefono = ?',
+        [telefono]
       );
-    });
+      return rows[0];
+    } catch (error) {
+      logger.error('Error obteniendo cliente:', error);
+      throw error;
+    }
   }
 
-  async updateCustomerStatus(phone, status, advisor = null) {
-    return new Promise((resolve, reject) => {
-      this.db.run(
-        'UPDATE customers SET status = ?, assigned_advisor = ?, last_interaction = CURRENT_TIMESTAMP WHERE phone = ?',
-        [status, advisor, phone],
-        (err) => {
-          if (err) {
-            logger.error('Error actualizando estado del cliente:', err);
-            reject(err);
-          } else {
-            resolve();
-          }
-        }
+  async crearCliente(telefono, nombre = null) {
+    try {
+      const [result] = await this.pool.execute(
+        'INSERT INTO clientes (telefono, nombre) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)',
+        [telefono, nombre]
       );
-    });
+      return result.insertId;
+    } catch (error) {
+      logger.error('Error creando cliente:', error);
+      throw error;
+    }
   }
 
-  async logConversation(customerId, message, response, routedTo = null) {
-    return new Promise((resolve, reject) => {
-      this.db.run(
-        'INSERT INTO conversations (customer_id, message, response, routed_to) VALUES (?, ?, ?, ?)',
-        [customerId, message, response, routedTo],
-        (err) => {
-          if (err) {
-            logger.error('Error registrando conversación:', err);
-            reject(err);
-          } else {
-            resolve();
-          }
-        }
+  async actualizarEstadoCliente(telefono, estado, asesor = null) {
+    try {
+      await this.pool.execute(
+        'UPDATE clientes SET estado = ?, asesor_asignado = ?, ultima_interaccion = CURRENT_TIMESTAMP WHERE telefono = ?',
+        [estado, asesor, telefono]
       );
-    });
+    } catch (error) {
+      logger.error('Error actualizando estado del cliente:', error);
+      throw error;
+    }
+  }
+
+  async registrarConversacion(clienteId, mensaje, respuesta, derivadoA = null) {
+    try {
+      await this.pool.execute(
+        'INSERT INTO conversaciones (cliente_id, mensaje, respuesta, derivado_a) VALUES (?, ?, ?, ?)',
+        [clienteId, mensaje, respuesta, derivadoA]
+      );
+    } catch (error) {
+      logger.error('Error registrando conversación:', error);
+      throw error;
+    }
+  }
+
+  async incrementarConversaciones(telefono) {
+    try {
+      await this.pool.execute(
+        'UPDATE clientes SET cantidad_conversaciones = cantidad_conversaciones + 1 WHERE telefono = ?',
+        [telefono]
+      );
+    } catch (error) {
+      logger.error('Error incrementando conversaciones:', error);
+      throw error;
+    }
+  }
+
+  async obtenerEstadisticas() {
+    try {
+      const [rows] = await this.pool.execute(`
+        SELECT 
+          COUNT(*) as total_clientes,
+          COUNT(CASE WHEN estado = 'activo' THEN 1 END) as clientes_activos,
+          COUNT(CASE WHEN estado = 'derivado_humano' THEN 1 END) as derivados_humano,
+          SUM(cantidad_conversaciones) as total_conversaciones
+        FROM clientes
+      `);
+      return rows[0];
+    } catch (error) {
+      logger.error('Error obteniendo estadísticas:', error);
+      throw error;
+    }
   }
 }
 
