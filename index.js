@@ -8,7 +8,7 @@
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const funciones = require('./funciones');
+const messageHandler = require('./src/handlers/messageHandler'); // ← Corrección aquí
 
 // ——————————————————————
 // Configuración
@@ -18,7 +18,7 @@ const funciones = require('./funciones');
  * Número de WhatsApp del asesor que recibirá notificaciones.
  * Debe incluir código de país + área (ej: 54911…) y terminar en “@c.us”
  */
-const numeroAsesor = '54911xxxxxx@c.us';
+const numeroAsesor = '549111133303995@c.us';
 
 // ——————————————————————
 // Inicialización del cliente
@@ -61,7 +61,8 @@ client.on('qr', qr => {
  */
 client.on('ready', () => {
     console.log('✅ Bot conectado y listo');
-    funciones.responderMensajesViejos(client, numeroAsesor);
+    // Si en el futuro agregas un método para responder mensajes viejos, lo llamas aquí.
+    // Por ahora, solo mostramos el mensaje de conexión.
 });
 
 /**
@@ -71,7 +72,7 @@ client.on('ready', () => {
  * Llama a la función que procesa y responde mensajes actuales.
  */
 client.on('message', message => {
-    funciones.responderMensajesActuales(client, message, numeroAsesor);
+    messageHandler.manejarMensaje(client, message); // ← Corrección aquí
 });
 
 // ——————————————————————

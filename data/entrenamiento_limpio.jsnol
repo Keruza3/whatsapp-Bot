@@ -1,0 +1,33 @@
+{"prompt": "¿Dónde informo el pago? ¿Adjunto el comprobante al informa pago de la página?", "completion": "Tenés que iniciar sesión, ir al pedido abonado e informar el pago desde ahí. Ahí mismo podés adjuntar el comprobante."}
+{"prompt": "¿Tienen catálogos impresos?", "completion": "No, solo trabajamos con catálogo online. Podés verlo en www.catalogoonline.com.ar con precios sugeridos de venta."}
+{"prompt": "¿Venden por menor?", "completion": "No, vendemos exclusivamente por mayor."}
+{"prompt": "¿Realizan cambios? ¿Cuál es su política de devolución?", "completion": "Solo hacemos devoluciones por fallas comprobables. No se cambian productos por talle o color. Deben estar sin uso y con su packaging original. Se devuelven en Perón 2809 4°E (CABA) dentro de los 30 días. El envío corre por cuenta del cliente."}
+{"prompt": "¿Dónde veo mi número de guía?", "completion": "Podés verlo 72 hs hábiles después del despacho desde 'Mi cuenta' > 'Mis pedidos'. También se envía al email registrado."}
+{"prompt": "¿Puedo modificar mis datos?", "completion": "Sí, iniciá sesión e ingresá en 'Mi cuenta' > 'Mis datos'. Cualquier cambio es responsabilidad del cliente."}
+{"prompt": "¿Tiene recargo el pago con tarjeta o MercadoPago?", "completion": "Sí, todos los pagos con tarjeta, Pago Fácil, Rapipago o MercadoPago tienen un recargo del 10% + IVA."}
+{"prompt": "¿Puedo pagar en cuotas?", "completion": "Sí, podés pagar en cuotas con MercadoPago. También podés aprovechar promociones con cuotas sin interés."}
+{"prompt": "¿Cómo puedo pagar mi compra?", "completion": "Podés pagar por transferencia, en efectivo en el local o por MercadoPago (tarjetas, Pago Fácil, Link, etc.)."}
+{"prompt": "¿Cuánto tiempo tengo para pagar mi pedido?", "completion": "Tenés 24 hs para pagar e informar el pago. Pasado ese tiempo, el sistema lo cancela automáticamente."}
+{"prompt": "¿Cuál es el tiempo de entrega al interior del país?", "completion": "Despachamos tu pedido en 96 hs hábiles. Luego depende del tiempo de entrega del transporte que elijas."}
+{"prompt": "¿Los precios y stock de la página están actualizados?", "completion": "Sí, la página está siempre actualizada. Solo mostramos productos disponibles."}
+{"prompt": "¿Cuál es la dirección y cómo puedo contactarlos?", "completion": "Estamos en Perón 2809 4°E, Once, CABA. Podés escribirnos a info@elparaisodepaso.com.ar."}
+{"prompt": "¿Hacen envíos a todo el país?", "completion": "Sí, enviamos a todo el país. Podés elegir transporte o correo al finalizar la compra."}
+{"prompt": "¿Puedo retirar en el local?", "completion": "Sí, podés retirar tu pedido por nuestro local en Once, CABA."}
+{"prompt": "¿Cuál es el monto mínimo de compra?", "completion": "El mínimo es $100.000 + IVA."}
+{"prompt": "¿Cuáles son las formas de pago?", "completion": "Aceptamos transferencia, efectivo y MercadoPago. Las compras con tarjeta tienen recargo."}
+{"prompt": "¿Cuánto tarda en llegar mi pedido?", "completion": "Depende del transporte y destino. En general, demora entre 24 y 72 hs luego del despacho."}
+{"prompt": "¿Cómo sé cuándo mi pedido está listo?", "completion": "Te avisamos por WhatsApp cuando el pedido esté listo para retirar o despachar."}
+{"prompt": "¿Puedo comprar sin ser revendedor?", "completion": "Sí, podés comprar por mayor sin ser revendedor. Solo tenés que respetar el mínimo."}
+{"prompt": "¿Qué pasa si el producto que compré no está?", "completion": "Te avisamos y podés elegir cambiarlo o eliminarlo del pedido."}
+{"prompt": "¿Puedo modificar mi pedido?", "completion": "Sí, podés modificarlo si no está facturado ni armado. Escribinos por WhatsApp lo antes posible."}
+{"prompt": "¿Cómo se calcula el costo de envío?", "completion": "Depende del transporte, el peso y el destino. Se paga al recibir el pedido."}
+{"prompt": "¿Qué pasa si no llego al mínimo?", "completion": "No se puede procesar el pedido. Podés sumar productos o compartir el pedido con alguien más."}
+{"prompt": "¿Puedo pedir el catálogo actualizado?", "completion": "Sí, escribinos por WhatsApp y te mandamos el catálogo digital actualizado."}
+{"prompt": "¿Qué pasa si no responden mi WhatsApp?", "completion": "Recibimos muchos mensajes, respondemos por orden lo más rápido posible dentro del horario laboral."}
+{"prompt": "¿Tienen showroom?", "completion": "Si, poseemos un showroom en Perón 2809 4°E, Once, CABA. Comunícate con juanjo para agendar una visita. Solicitame hablar con el y te derivo."}
+{"prompt": "¿Tienen lista de precios mayorista?", "completion": "Sí, los precios de la página ya son mayoristas."}
+{"prompt": "¿Cómo sé si mi pedido fue confirmado?", "completion": "Te llega un mail de confirmación de pago y lo podes ver en 'Mi cuenta' > 'Mis pedidos'."}
+{"prompt": "¿Puedo elegir el transporte?", "completion": "Sí, podés elegir transporte al cerrar la compra o sugerir uno por WhatsApp."}
+{"prompt": "¿Trabajan con Mercado Envíos?", "completion": "No, trabajamos con transporte o correo tradicional. Mercado Envíos no está disponible."}
+{"prompt": "¿Qué productos venden?", "completion": "Vendemos lenceria y ropa interior, indumentaria, ropa de cama, baño y cocina, blanqueria, valijas y accesorios de moda, camping, iluminacion y electronica, fitness|deportes, bazar y mates, belleza y cuidado personal, bijouterie, perfumeria y arozatizante, textil y barbijos."}
+{"prompt": "¿Puedo cancelar mi pedido?", "completion": "Sí, mientras no esté facturado ni despachado. Avisanos por WhatsApp."}

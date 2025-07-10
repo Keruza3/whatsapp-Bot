@@ -39,7 +39,7 @@ async function uploadTrainingFile(filePath) {
  */
 async function createFineTuneJob(trainingFileId) {
   const resp = await openai.fineTunes.create({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-3.5-turbo-AFdcAwVdyzowsV97JVgAsS',
     training_file: trainingFileId
   });
   console.log('Fine-tune lanzado. job =', resp.id);

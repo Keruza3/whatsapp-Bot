@@ -6,7 +6,7 @@
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const messageHandler = require('./handlers/messageHandler');
+const messageHandler = require('./src/handlers/messageHandler');
 const logger = require('./utils/logger');
 
 // ——————————————————————

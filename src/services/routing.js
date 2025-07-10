@@ -30,7 +30,7 @@ class RoutingService {
     `;
 
     try {
-      const analisis = await chatGPT(promptAnalisis, [], 'gpt-3.5-turbo');
+      const analisis = await chatGPT(promptAnalisis, [], 'ft:gpt-3.5-turbo-file-AFdcAwVdyzowsV97JVgAsS');
       const analisisParseado = JSON.parse(analisis);
       
       // Validar que tenga los campos requeridos
