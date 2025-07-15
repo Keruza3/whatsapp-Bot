@@ -3,5 +3,7 @@ session
 .session
 .env
 .wwebjs_auth/
+.wwebjs_cache/
 data/*.db
 logs/*.log
+logs/

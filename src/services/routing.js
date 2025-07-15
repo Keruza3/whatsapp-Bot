@@ -12,25 +12,29 @@ class RoutingService {
 
   async analizarMensaje(mensaje, telefonoCliente) {
     const promptAnalisis = `
-      Analiza el siguiente mensaje de un cliente y determina:
-      1. Tipo de consulta: 'nuevo_cliente', 'pedido', 'administrativo', 'general'
-      2. Urgencia: 'baja', 'media', 'alta'
-      3. Asesor recomendado: 'juanjo' (pedidos y nuevos clientes) o 'mari' (administrativo)
-      4. Respuesta automática: true/false
-      
-      Responde SOLO en formato JSON válido:
-      {
-        "tipo": "tipo_consulta",
-        "urgencia": "nivel_urgencia", 
-        "asesor": "nombre_asesor",
-        "auto_respuesta": true/false
-      }
-      
-      Mensaje: "${mensaje}"
+Analiza el siguiente mensaje de un cliente y determina:
+1. Tipo de consulta: 'nuevo_cliente', 'pedido', 'administrativo', 'general'
+2. Urgencia: 'baja', 'media', 'alta'
+3. Asesor recomendado: 'juanjo' (pedidos, nuevos clientes, consultas generales) o 'mari' (administrativo, pagos, facturación)
+4. Respuesta automática: true/false
+
+IMPORTANTE:
+- Solo pon "auto_respuesta": false si la consulta es muy compleja, requiere intervención humana, datos personales, pagos, reclamos, o no puedes responder con la información disponible.
+- Si la consulta es una pregunta frecuente, información general, saludo, consulta de horarios, formas de compra, productos, o cualquier cosa que pueda responder el bot, pon "auto_respuesta": true.
+
+Responde SOLO en formato JSON válido:
+{
+  "tipo": "tipo_consulta",
+  "urgencia": "nivel_urgencia", 
+  "asesor": "nombre_asesor",
+  "auto_respuesta": true/false
+}
+
+Mensaje: "${mensaje}"
     `;
 
     try {
-      const analisis = await chatGPT(promptAnalisis, [], 'ft:gpt-3.5-turbo-file-AFdcAwVdyzowsV97JVgAsS');
+      const analisis = await chatGPT(promptAnalisis, [], 'gpt-3.5-turbo');
       const analisisParseado = JSON.parse(analisis);
       
       // Validar que tenga los campos requeridos
@@ -47,15 +51,21 @@ class RoutingService {
 
   analisisFallback(mensaje) {
     const texto = mensaje.toLowerCase();
-    
-    if (texto.includes('pedido') || texto.includes('comprar') || texto.includes('precio')) {
-      return { tipo: 'pedido', urgencia: 'media', asesor: 'juanjo', auto_respuesta: false };
-    }
-    
-    if (texto.includes('factura') || texto.includes('devolución') || texto.includes('reclamo')) {
+
+    // Derivar solo si es un reclamo, pago, o algo muy administrativo
+    if (
+      texto.includes('factura') ||
+      texto.includes('devolución') ||
+      texto.includes('reclamo') ||
+      texto.includes('pago') ||
+      texto.includes('transferencia') ||
+      texto.includes('problema') ||
+      texto.includes('error')
+    ) {
       return { tipo: 'administrativo', urgencia: 'alta', asesor: 'mari', auto_respuesta: false };
     }
-    
+
+    // Para todo lo demás, responde automáticamente
     return { tipo: 'general', urgencia: 'baja', asesor: 'juanjo', auto_respuesta: true };
   }
 
