@@ -77,17 +77,22 @@ Mensaje: "${mensaje.body}"`;
 
   async enviarRespuestaAutomatica(client, mensaje, analisis) {
     try {
-      const saludo = "¡Hola!";
+      // 1. Buscar en la base de datos FAQ
+      const respuestaFAQ = await buscarRespuesta(mensaje.body);
 
-      // Generar la respuesta del bot
-      const respuestaBot = await conversationService.generarRespuesta(
-        mensaje.body, 
-        mensaje.from
-      );
+      let respuestaBot;
+      if (respuestaFAQ) {
+        respuestaBot = respuestaFAQ;
+      } else {
+        // 2. Si no hay respuesta en FAQ, usar la IA
+        respuestaBot = await conversationService.generarRespuesta(
+          mensaje.body, 
+          mensaje.from
+        );
+      }
 
-      // Enviar el saludo genérico + respuesta
-      await mensaje.reply(`${saludo} ${respuestaBot}`);
-
+      // Enviar la respuesta
+      await mensaje.reply(` ${respuestaBot}`);
       logger.info(`Respuesta automática enviada a ${mensaje.from}`);
     } catch (error) {
       logger.error('Error en enviarRespuestaAutomatica:', error);
@@ -107,6 +112,40 @@ Mensaje: "${mensaje.body}"`;
     } catch (error) {
       logger.error('Error en manejarError:', error);
     }
+  }
+}
+
+const stopwords = [
+  'el', 'la', 'los', 'las', 'de', 'con', 'y', 'a', 'en', 'por', 'para', 'un', 'una', 'que', 'al', 'del',
+  'tengo', 'tiene', 'tienen', 'tienes', 'yo', 'tu', 'usted', 'ustedes', 'mi', 'su', 'sus', 'es', 'son',
+  'ser', 'fue', 'fueron', 'soy', 'eres', 'somos', 'sea', 'sean', 'como', 'pero', 'si', 'no', 'sí', 'o',
+  'u', 'ni', 'ya', 'le', 'lo', 'se', 'me', 'te', 'nos', 'os', 'les'
+];
+
+function extraerPalabrasClave(pregunta) {
+  return pregunta
+    .toLowerCase()
+    .replace(/[¿?¡!.,;]/g, '')
+    .split(' ')
+    .filter(palabra => !stopwords.includes(palabra) && palabra.length > 2);
+}
+
+async function buscarRespuesta(pregunta) {
+  const palabrasClave = extraerPalabrasClave(pregunta);
+
+  if (palabrasClave.length === 0) return null;
+
+  let sql = "SELECT respuesta FROM preguntas WHERE ";
+  sql += palabrasClave.map(p => `pregunta LIKE '%${p}%'`).join(' AND ');
+  sql += " LIMIT 1";
+
+  // Usa el pool de conexiones existente
+  const [rows] = await db.pool.execute(sql);
+
+  if (rows.length > 0) {
+    return rows[0].respuesta;
+  } else {
+    return null;
   }
 }
 
