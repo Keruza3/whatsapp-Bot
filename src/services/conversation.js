@@ -1,10 +1,10 @@
 const { chatGPT } = require('./openai');
-const db = require('../core/database');
+const baseDeDatos = require('../core/database');
 const logger = require('../utils/logger');
 
-class ConversationService {
+class ServicioConversacion {
   async generarRespuesta(mensaje, telefonoCliente, contexto = []) {
-    const cliente = await db.getCliente(telefonoCliente);
+    const cliente = await baseDeDatos.obtenerCliente(telefonoCliente);
     const esClienteNuevo = !cliente || cliente.cantidad_conversaciones === 0;
     const promptSistema = this.construirPromptSistema(esClienteNuevo, cliente);
 
@@ -17,16 +17,16 @@ class ConversationService {
         ],
         'gpt-3.5-turbo'
       );
-      
+
       if (!cliente) {
-        const clienteId = await db.crearCliente(telefonoCliente);
-        await db.registrarConversacion(clienteId, mensaje, respuesta);
-        await db.incrementarConversaciones(telefonoCliente);
+        const clienteId = await baseDeDatos.crearCliente(telefonoCliente);
+        await baseDeDatos.registrarConversacion(clienteId, mensaje, respuesta);
+        await baseDeDatos.incrementarConversaciones(telefonoCliente);
       } else {
-        await db.registrarConversacion(cliente.id, mensaje, respuesta);
-        await db.incrementarConversaciones(telefonoCliente);
+        await baseDeDatos.registrarConversacion(cliente.id, mensaje, respuesta);
+        await baseDeDatos.incrementarConversaciones(telefonoCliente);
       }
-      
+
       return respuesta;
     } catch (error) {
       logger.error('Error generando respuesta:', error);
@@ -67,7 +67,7 @@ Mensaje recibido: {mensajeUsuario}`;
   }
 
   async debeReenganchar(telefonoCliente) {
-    const cliente = await db.getCliente(telefonoCliente);
+    const cliente = await baseDeDatos.obtenerCliente(telefonoCliente);
     if (!cliente) return true;
     
     // Re-enganchar si pasaron más de 24 horas desde la última interacción
@@ -78,4 +78,4 @@ Mensaje recibido: {mensajeUsuario}`;
   }
 }
 
-module.exports = new ConversationService(); 
+module.exports = new ServicioConversacion(); 

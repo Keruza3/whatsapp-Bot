@@ -71,7 +71,7 @@ Mensaje: "${mensaje}"
 
   async derivarCliente(telefonoCliente, analisis) {
     try {
-      const cliente = await db.getCliente(telefonoCliente);
+      const cliente = await db.obtenerCliente(telefonoCliente);
       
       if (!cliente) {
         await db.crearCliente(telefonoCliente);

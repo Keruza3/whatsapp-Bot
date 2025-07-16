@@ -29,13 +29,13 @@ class Database {
     }
   }
 
-  async getCliente(telefono) {
+  async obtenerCliente(telefono) {
     try {
-      const [rows] = await this.pool.execute(
+      const [filas] = await this.pool.execute(
         'SELECT * FROM clientes WHERE telefono = ?',
         [telefono]
       );
-      return rows[0];
+      return filas[0];
     } catch (error) {
       logger.error('Error obteniendo cliente:', error);
       throw error;

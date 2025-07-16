@@ -23,7 +23,7 @@ class MessageHandler {
       logger.info(`Análisis del mensaje:`, analisis);
 
       // 2. Verificar si el cliente está en modo "derivado"
-      const cliente = await db.getCliente(telefonoCliente);
+      const cliente = await db.obtenerCliente(telefonoCliente);
       if (cliente && cliente.estado === 'derivado_humano') {
         // Verificar si debe re-enganchar
         if (await conversationService.debeReenganchar(telefonoCliente)) {
@@ -56,7 +56,7 @@ class MessageHandler {
 
   async derivarAHumano(client, mensaje, derivacion, analisis) {
     try {
-      const respuesta = `👨‍ Perfecto! Te voy a conectar con ${derivacion.nombreAsesor} que es especialista en este tipo de consultas. En breve te contacta.`;
+      const respuesta = `👨‍ Perfecto! Te voy a conectar con ${derivacion.nombreAsesor} que es especialista en este tipo de consultas. En breve te va a contactar.`;
 
       await mensaje.reply(respuesta);
 
@@ -70,7 +70,7 @@ Mensaje: "${mensaje.body}"`;
 
       logger.info(`Cliente ${mensaje.from} derivado a ${derivacion.nombreAsesor}`);
     } catch (error) {
-      logger.error('Error en derivarAHumano:', error);
+      logger.error('Error en derivar a humano:', error);
       throw error;
     }
   }
