@@ -34,7 +34,6 @@ client.on('qr', qr => {
 client.on('ready', () => {
     logger.info('Bot conectado y listo');
     console.log('✅ Bot conectado y listo');
-    console.log('🤖 Arquitectura modular activa');
     console.log('📊 Base de datos MySQL inicializada');
 });
 
@@ -71,5 +70,5 @@ process.on('uncaughtException', (error) => {
 // Arranque del bot
 // ——————————————————————
 
-console.log('🚀 Iniciando WhatsApp Bot con arquitectura modular...');
+console.log('Iniciando WhatsApp Bot');
 client.initialize();
