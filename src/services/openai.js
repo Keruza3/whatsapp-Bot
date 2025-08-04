@@ -23,12 +23,17 @@ const openai = new OpenAI({
  * @returns {Promise<string>} El ID del archivo subido (file_id)
  */
 async function uploadTrainingFile(filePath) {
-  const resp = await openai.files.create({
-    file: fs.createReadStream(path.resolve(filePath)),
-    purpose: 'fine-tune'
-  });
-  console.log('✅ Archivo subido. file_id =', resp.id);
-  return resp.id;
+  try {
+    const resp = await openai.files.create({
+      file: fs.createReadStream(path.resolve(filePath)),
+      purpose: 'fine-tune'
+    });
+    console.log('✅ Archivo subido. file_id =', resp.id);
+    return resp.id;
+  } catch (error) {
+    console.error('❌ Error al subir archivo:', error);
+    throw error;
+  }
 }
 
 /**
@@ -85,4 +90,4 @@ module.exports = {
   createFineTuneJob,
   getFineTuneStatus,
   chatGPT
-}; 
+};
