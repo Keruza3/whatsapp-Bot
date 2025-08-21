@@ -1,9 +1,5 @@
 README_CONTENT='''\n# WHATSAPP-BOT
 
-Transform Conversations, Empower Connections Instantly  
-
-![language](https://img.shields.io/badge/javascript-100%25-yellow)  
-![languages](https://img.shields.io/badge/languages-1-lightgrey)
 
 Built with the tools and technologies:  
 ![JSON](https://img.shields.io/badge/-JSON-lightgrey)   
