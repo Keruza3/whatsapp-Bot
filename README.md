@@ -2,14 +2,11 @@ README_CONTENT='''\n# WHATSAPP-BOT
 
 Transform Conversations, Empower Connections Instantly  
 
-![last commit](https://img.shields.io/badge/last_commit-august-blue)  
 ![language](https://img.shields.io/badge/javascript-100%25-yellow)  
 ![languages](https://img.shields.io/badge/languages-1-lightgrey)
 
 Built with the tools and technologies:  
-![JSON](https://img.shields.io/badge/-JSON-lightgrey)  
-![npm](https://img.shields.io/badge/-npm-red)  
-![dotenv](https://img.shields.io/badge/-ENV-green)  
+![JSON](https://img.shields.io/badge/-JSON-lightgrey)   
 ![JavaScript](https://img.shields.io/badge/-JavaScript-yellow)  
 ![Nodemon](https://img.shields.io/badge/-Nodemon-brightgreen)  
 ![OpenAI](https://img.shields.io/badge/-OpenAI-purple)  
